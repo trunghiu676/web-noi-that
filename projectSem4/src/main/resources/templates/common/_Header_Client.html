@@ -1,0 +1,90 @@
+ <div id="preloder">
+        <div class="loader"></div>
+</div>
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            <ul>
+                                <li><i class="fa fa-envelope"></i> noithat@hkt.com</li>
+                                <li>Miễn phí vận chuyển cho đơn từ 5,000,000đ</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__social">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-linkedin"></i></a>
+                                <a href="#"><i class="fa fa-pinterest-p"></i></a>
+                            </div>
+                            <div class="header__top__right__language">
+                                <img src="../../client/img/language.png" alt="">
+                                <div>Tiếng Việt</div>
+                                <!-- <span class="arrow_carrot-down"></span>
+                                <ul>
+                                    <li><a href="#">Tiee</a></li>
+                                </ul> -->
+                            </div>
+                            <!-- /////// -->
+                            <div class="header__top__right__auth" id="loginSection" th:if="${session.role == null}">
+                                <a th:href="@{/login}" onclick="checkUserRole()"><i class="fa fa-user"></i>đăng nhập</a>
+                            </div>
+                            <div class="header__top__right__auth" id="registerSection" th:if="${session.role == null}">
+                                <a th:href="@{/register}" onclick="checkUserRole()"><i class="fa fa-user"></i> đăng ký</a>
+                            </div>
+
+                            <div class="header__top__right__auth" th:if="${session.role != null}">
+                              <a th:href="@{'/profile/' + ${session.username}}"> Hi, <span th:text="${session.username}"></span> </a>  
+                            </div>
+                            <div class="header__top__right__auth" th:if="${session.role != null}">
+                                <div><a th:href="@{/logout}"><i class="fa fa-sign-out"></i>đăng xuất</div></div>
+                           
+                            
+                            <!-- ////// -->
+                         
+                            <!--  -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+              <div class="col-lg-3">
+                <div class="header__logo">
+                  <a href="/"><img src="../../client/img/logo.png" alt="" /></a>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <nav class="header__menu">
+                  <ul>
+                    <li class="active"><a href="/">Trang chủ</a></li>
+                    <li><a href="/san-pham">Sản phẩm</a></li>
+                    <li><a href="/khuyen-mai">Khuyến Mãi</a></li>
+                    <li><a href="/tin-tuc">Tin tức</a></li>
+                    <li><a href="/lien-he">Liên hệ</a></li>
+                  </ul>
+                </nav>
+              </div>
+              <div class="col-lg-1">
+                <div class="header__cart">
+                  <ul>
+                    <li>
+                      <a href="/gio-hang">
+                        <i class="fa fa-shopping-bag"></i>
+                        <span id="cart-item-count"></span>
+                      </a>                    
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="humberger__open">
+              <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>

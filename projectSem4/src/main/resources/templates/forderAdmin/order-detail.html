@@ -1,0 +1,218 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:fragment="TitlePage">Chi tiết đơn hàng</title>
+    <style th:replace="/common/_Head_tag"></style>
+  </head>
+
+  <body>
+    <!-- header-->
+    <header th:replace="common/_Header_admin"></header>
+
+    <div class="content">
+      <div class="page-inner">
+        <!-- breadcrumbs -->
+        <div class="page-header">
+          <ul class="breadcrumbs">
+            <li class="nav-home">
+              <a href="/admin">
+                <i class="flaticon-home"></i>
+              </a>
+            </li>
+            <li class="separator">
+              <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+              <a href="/admin/order">Đơn hàng</a>
+            </li>
+            <li class="separator">
+              <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+              <span>Xem đơn hàng</span>
+            </li>
+          </ul>
+        </div>
+        <!-- end breadcrumbs -->
+
+        <!-- body-->
+
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Chi tiết đơn hàng</h4>
+              </div>
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Sản phẩm</th>
+                      <th>Mã sản phẩm</th>
+                      <th>SL</th>
+                      <th>Giá</th>
+                      <th>Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="detail : ${orderDetail}">
+                      <td>
+                        <img
+                          th:src="'/uploads/' + ${detail['product_image']}"
+                          alt="product image"
+                          width="90"
+                        />
+
+                      </td>
+                      <td><b th:text="${detail['product_name']}"></b></td>
+                      <td th:text="${detail['product_code']}"></td>
+                      <td th:text="${detail['quantity']}"></td>
+                      <td>[[${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}]]đ</td>
+                      <td>[[${#numbers.formatDecimal(detail.totalPrice, 0, 'COMMA', 0, 'POINT')}]]đ</td>
+                    </tr>
+                    <tr>
+                      <td colspan="4"></td>
+                      <td><h4>Tổng cộng:</h4></td>
+                      <td><h4>[[${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')}]]đ</h4></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card" th:unless="${order.status == 'Đã hủy'}">
+              <div class="card-body">
+                <form id="orderForm">
+                  <input type="hidden" id="orderId" name="orderId" th:value="${order.id}" />
+                  <input type="hidden" id="currentStatus" name="currentStatus" th:value="${order.status}" />
+                  <div class="form-check">
+                    <label>Trạng thái đơn hàng</label><br />
+                    <label th:each="status : ${orderStatusList}" class="form-radio-label">
+                      <input class="form-radio-input" type="radio" name="orderStatus" th:value="${status}" th:checked="${status == order.status}" />
+                      <span class="form-radio-sign" th:text="${status}"></span>
+                    </label>
+                  </div>
+                  <div class="form-group">
+                    <b>Hình thức thanh toán:</b>
+                    <p th:text="${order.paymentStatus ? 'Thanh toán qua VNPAY' : 'Giao & thu tiền tận nơi - COD'}"></p>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Lưu</button>
+                </form>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-body">
+                <table class="table">
+                  <tr>
+                    <th>Mã đơn hàng</th>
+                    <td th:text="${order.code}"></td>
+                  </tr>
+                  <tr>
+                    <th>Họ tên</th>
+                    <td th:text="${order.customerName}"></td>
+                  </tr>
+                  <tr>
+                    <th>Điện thoại</th>
+                    <td th:text="${order.shippingPhone}"></td>
+                  </tr>
+                  <tr>
+                    <th>Địa chỉ</th>
+                    <td th:text="${order.shippingAddress}"></td>
+                  </tr>
+                  <tr>
+                    <th>Ngày đặt hàng</th>
+                    <td th:text="${order.orderDate}"></td>
+                  </tr>
+                  <tr th:if="${order.status == 'Đã hủy'}">
+                    <th>Trạng thái</th>
+                    <td th:text="${order.status}"></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End body -->
+      </div>
+    </div>
+
+    <footer th:replace="common/_footer_admin"></footer>
+    <script>
+      $(document).ready(function () {
+        $("#orderForm").submit(function (e) {
+          e.preventDefault(); // Ngăn chặn gửi form mặc định
+
+          // Lấy giá trị trạng thái hiện tại
+          var currentStatus = $("#currentStatus").val();
+
+          // Lấy giá trị trạng thái mới đã chọn
+          var newStatus = $("input[name='orderStatus']:checked").val();
+
+          // Khởi tạo mảng chứa các trạng thái trong thứ tự tăng dần
+          var statusOrder = ["Đơn hàng mới", "Chờ xác nhận", "Đang vận chuyển", "Hoàn tất"];
+
+          // Lấy vị trí của trạng thái hiện tại và trạng thái mới trong mảng statusOrder
+          var currentStatusIndex = statusOrder.indexOf(currentStatus);
+          var newStatusIndex = statusOrder.indexOf(newStatus);
+
+          // Kiểm tra xem trạng thái mới có lớn hơn trạng thái hiện tại một bậc không
+          if (newStatusIndex - currentStatusIndex === 1) {
+            // Trạng thái mới cao hơn trạng thái hiện tại một bậc, cho phép cập nhật
+            var formData = {
+              id: $("#orderId").val(), // Đảm bảo cung cấp id đơn hàng
+              status: newStatus, // Lấy giá trị trạng thái đã chọn
+            };
+
+            // Gửi yêu cầu POST
+            $.ajax({
+              type: "POST",
+              url: "/admin/order/edit",
+              data: formData,
+              success: function (data) {
+                // Thông báo thành công
+                $.notify(
+                  {
+                    message: "Đã cập nhật đơn hàng thành công!",
+                  },
+                  {
+                    type: "success",
+                    delay: 3000, // Thời gian hiển thị thông báo (3 giây)
+                  }
+                );
+              },
+              error: function (xhr, status, error) {
+                // Xử lý lỗi
+                $.notify(
+                  {
+                    message: "Cập nhật đơn hàng thất bại!",
+                  },
+                  {
+                    type: "danger",
+                    delay: 3000, // Thời gian hiển thị thông báo (3 giây)
+                  }
+                );
+              },
+            });
+          } else {
+            // Trạng thái mới không cao hơn trạng thái hiện tại một bậc, thông báo lỗi
+            $.notify(
+              {
+                message: "Chỉ được phép cập nhật lên một bậc mỗi lần!",
+              },
+              {
+                type: "danger",
+                delay: 3000, // Thời gian hiển thị thông báo (3 giây)
+              }
+            );
+          }
+        });
+      });
+
+    </script>
+      
+
+  </body>
+</html>

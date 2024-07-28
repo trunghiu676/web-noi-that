@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo bài viết</title>
+    <style th:replace="/common/_Head_tag"></style>
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.css">
+</head>
+<body>
+    <!-- Header -->
+    <header th:replace="common/_Header_admin"></header>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="page-inner">
+            <!-- Breadcrumbs -->
+            <div class="page-header">
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="/admin">
+                            <i class="flaticon-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/news">Tin tức</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <span>Tạo bài viết mới</span>
+                    </li>
+                </ul>
+            </div>
+            <!-- End Breadcrumbs -->
+
+            <!-- Body -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <span th:text="${error}"></span>
+                    </div>
+                    <form id="newsForm" action="/admin/news/add" method="post" th:object="${news}">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Tạo bài viết mới</h4> 
+                                <button type="submit" class="btn btn-primary" style="float: right;">Lưu</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="keyword">Từ khóa</label>
+                                    <input type="text" class="form-control" id="keyword" th:field="*{keyword}" autocomplete="off">
+                                    <div id="keywordError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Tên bài viết</label>
+                                    <input type="text" class="form-control" id="name" onkeyup="ChangeToSlug();" th:field="*{name}" autocomplete="off">
+                                    <div id="nameError" class="error-message"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="description">Mô tả ngắn</label>
+                                    <input type="text" class="form-control" id="description" onkeyup="ChangeToDescription();" th:field="*{description}" autocomplete="off">
+                                    <div id="descriptionError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="content">Nội dung</label>
+                                    <textarea id="editor" name="content" th:field="*{content}"></textarea>
+                                    <div id="contentError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Hình đại diện</label>
+                                    <input type="hidden" id="imageName" th:field="*{image}" />
+                                    <input type="file" class="form-control" id="image" style="display: none;">
+                                    <button type="button" class="btn btn-outline-secondary" id="uploadButton">Tải lên ảnh</button> <br>
+                                    <img id="filePreview" src="" width="200px" class="card">
+                                    <!-- Nếu xác nhận ảnh sẽ hiển thị tại đây -->
+                                    <div id="imageError" class="error-message"></div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Tối ưu SEO</h4>
+                                <p>Thiết lập các thẻ mô tả giúp khách hàng dễ dàng tìm thấy sản phẩm trên công cụ tìm kiếm như Google.</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="meta_title">Tiêu đề SEO</label>
+                                    <input type="text" class="form-control" id="meta_title" th:field="*{metaTitle}" autocomplete="off">
+                                    <div id="metaTitleError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="meta_description">Mô tả SEO</label>
+                                    <input type="text" class="form-control" id="meta_description" th:field="*{metaDescription}" autocomplete="off">
+                                    <div id="metaDescriptionError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Đường dẫn (URL)</label>
+                                    <input type="text" class="form-control" id="path" th:field="*{path}" autocomplete="off">
+                                    <div id="pathError" class="error-message"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="index">Index (SEO)</label>
+                                    <select class="form-control" id="index" th:field="*{index}">
+                                        <option value="true">Bật</option>
+                                        <option value="false">Tắt</option>
+                                    </select>
+                                    <div id="indexError" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+            <!-- End Body -->
+        </div>
+    </div>
+    <!-- End Content -->
+
+    <!-- Footer -->
+    <footer th:replace="common/_footer_admin"></footer>
+
+    <!-- CKEditor Script -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    <!-- Tạo url từ tên bài viết  -->
+    <script language="javascript">
+        function ChangeToSlug()
+        {
+            var title, slug;
+
+            //Lấy text từ thẻ input title 
+            title = document.getElementById("name").value;
+
+            //Đổi chữ hoa thành chữ thường
+            slug = title.toLowerCase();
+
+            //Đổi ký tự có dấu thành không dấu
+            slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
+            slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
+            slug = slug.replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i');
+            slug = slug.replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o');
+            slug = slug.replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u');
+            slug = slug.replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y');
+            slug = slug.replace(/đ/gi, 'd');
+            //Xóa các ký tự đặt biệt
+            slug = slug.replace(/\`|\~|\!|\@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi, '');
+            //Đổi khoảng trắng thành ký tự gạch ngang
+            slug = slug.replace(/ /gi, "-");
+            //Đổi nhiều ký tự gạch ngang liên tiếp thành 1 ký tự gạch ngang
+            //Phòng trường hợp người nhập vào quá nhiều ký tự trắng
+            slug = slug.replace(/\-\-\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-\-/gi, '-');
+            slug = slug.replace(/\-\-/gi, '-');
+            //Xóa các ký tự gạch ngang ở đầu và cuối
+            slug = '@' + slug + '@';
+            slug = slug.replace(/\@\-|\-\@|\@/gi, '');
+            //In slug ra textbox có id “slug”
+            document.getElementById('meta_title').value = title;
+            document.getElementById('path').value = slug;
+        }
+        function ChangeToDescription(){
+            var description = document.getElementById("description").value;
+            document.getElementById('meta_description').value = description;
+        }
+    </script>
+    <!-- JavaScript kiểm tra người dùng nhập form -->
+    <script>
+        document.getElementById('newsForm').addEventListener('submit', function(event) {
+        var name = document.getElementById('name').value.trim();
+        var description = document.getElementById('description').value.trim();
+        var content = document.getElementById('editor').value.trim();
+        var path = document.getElementById('path').value.trim();
+        var image = document.getElementById('image').value.trim();
+        var keyword = document.getElementById('keyword').value.trim();
+        var metaTitle = document.getElementById('meta_title').value.trim();
+        var metaDescription = document.getElementById('meta_description').value.trim();
+
+        var nameError = document.getElementById('nameError');
+        var descriptionError = document.getElementById('descriptionError');
+        var contentError = document.getElementById('contentError');
+        var pathError = document.getElementById('pathError');
+        var imageError = document.getElementById('imageError');
+        var keywordError = document.getElementById('keywordError');
+        var metaTitleError = document.getElementById('metaTitleError');
+        var metaDescriptionError = document.getElementById('metaDescriptionError');
+
+        nameError.innerHTML = "";
+        descriptionError.innerHTML = "";
+        contentError.innerHTML = "";
+        pathError.innerHTML = "";
+        imageError.innerHTML = "";
+        keywordError.innerHTML = "";
+        metaTitleError.innerHTML = "";
+        metaDescriptionError.innerHTML = "";
+
+        if (name === "") {
+            nameError.innerHTML = "Vui lòng nhập tên bài viết";
+            event.preventDefault();
+        }
+        if (description === "") {
+            descriptionError.innerHTML = "Vui lòng nhập mô tả ngắn";
+            event.preventDefault();
+        }
+        if (content === "") {
+            contentError.innerHTML = "Vui lòng nhập nội dung";
+            event.preventDefault();
+        }
+        if (path === "") {
+            pathError.innerHTML = "Vui lòng nhập đường dẫn (URL)";
+            event.preventDefault();
+        }
+        if (image === "") {
+            imageError.innerHTML = "Vui lòng chọn hình đại diện";
+            event.preventDefault();
+        }
+        if (keyword === "") {
+            keywordError.innerHTML = "Vui lòng nhập từ khóa";
+            event.preventDefault();
+        }
+        if (metaTitle === "") {
+            metaTitleError.innerHTML = "Vui lòng nhập tiêu đề SEO";
+            event.preventDefault();
+        }
+        if (metaDescription === "") {
+            metaDescriptionError.innerHTML = "Vui lòng nhập mô tả SEO";
+            event.preventDefault();
+        }
+    });
+
+    // Ẩn thông báo lỗi khi người dùng bắt đầu nhập lại trường đó
+    document.getElementById('name').addEventListener('input', function() {
+        document.getElementById('nameError').innerHTML = "";
+    });
+
+    document.getElementById('description').addEventListener('input', function() {
+        document.getElementById('descriptionError').innerHTML = "";
+    });
+
+    document.getElementById('editor').addEventListener('input', function() {
+        document.getElementById('contentError').innerHTML = "";
+    });
+
+    document.getElementById('path').addEventListener('input', function() {
+        document.getElementById('pathError').innerHTML = "";
+    });
+
+    document.getElementById('image').addEventListener('input', function() {
+        document.getElementById('imageError').innerHTML = "";
+    });
+
+    document.getElementById('keyword').addEventListener('input', function() {
+        document.getElementById('keywordError').innerHTML = "";
+    });
+
+    document.getElementById('meta_title').addEventListener('input', function() {
+        document.getElementById('metaTitleError').innerHTML = "";
+    });
+
+    document.getElementById('meta_description').addEventListener('input', function() {
+        document.getElementById('metaDescriptionError').innerHTML = "";
+    });
+
+    </script>
+    <!-- Tải lên hình ảnh  -->
+    <script type="text/javascript">
+        $('#uploadButton').on('click', function() {
+         $('#image').click(); // Mở hộp thoại tải lên tệp khi nút được nhấp
+        });
+
+        $('#image').on('change', function(){
+        var formData = new FormData();
+        formData.append('file', $('#image')[0].files[0]);
+
+        $.ajax({
+            url: '/images/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                // Kiểm tra nếu phản hồi là một chuỗi JSON chứa thông tin hình ảnh
+                if (typeof data === 'object' && data.url && data.message && data.name) {
+                    // Nếu tải lên thành công, hiển thị hình ảnh và tên hình ảnh
+                    $('#filePreview').attr('src', data.url);
+                    $('#filePreview').attr('alt', data.message);
+                    $('#imageName').val(data.name); 
+                    console.log(data);
+                } else {
+                    console.log(data); // Phản hồi không chứa thông tin hình ảnh
+                }
+            },
+            error: function(xhr, status, error) {
+                // Xử lý lỗi nếu có
+                console.log(error);
+            }
+        });
+        });
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="amphtml" th:href="@{http://localhost:8888/tin-tuc/{path}(path=${newsDetail.path})}">
+    <title th:text="${newsDetail.name}"></title>
+    <meta name="keywords" th:content="${newsDetail.keyword}">
+    <meta name="description" th:content="${newsDetail.metaDescription}">
+    <meta name="robots" th:if="${newsDetail.index}" content="INDEX,FOLLOW">
+    <meta name="robots" th:if="${!newsDetail.index}" content="NOINDEX,NOFOLLOW">
+    <link rel="canonical" th:href="@{http://localhost:8888/tin-tuc/{path}(path=${newsDetail.path})}"/>
+    <meta property="og:title" th:content="${newsDetail.metaTitle}" />
+    <meta property="og:description" th:content="${newsDetail.metaDescription}" />
+    <meta property="og:url" th:content="@{http://localhost:8888/tin-tuc/{path}(path=${newsDetail.path})}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image:alt" th:content="${newsDetail.metaTitle}" />
+    <meta property="og:image" th:content="@{http://localhost:8888/uploads/{path}(path=${newsDetail.image})}" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:image:width" content="300" />
+    <style th:replace="/common/_Head_tag_client"></style>
+</head>
+<body>
+    <header  th:replace="common/_Header_Client"></header>
+
+    <!-- Hero Section Begin -->
+    <section class="hero hero-normal">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                          <i class="fa fa-bars"></i>
+                          <span>Tất cả danh mục</span>
+                        </div>
+                        <ul>
+                          <li th:each="category : ${categories}"><a th:href="@{/{path}(path=${category.path})}">[[${category.name}]]</a></li>
+                          <li><a href="/khuyen-mai">Khuyến Mãi</a></li>
+                          <li><a href="/tin-tuc">Tin Tức</a></li>
+                          <li><a href="/lien-he">Liên Hệ</a></li>
+                          <li><a href="#"></a></li>
+                          <li><a href="#"> </a></li>
+                        </ul>
+                      </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="/search/product" method="GET">
+                                <div class="hero__search__categories">
+                                  Tìm kiếm
+                                  <span class="arrow_carrot-down"></span>
+                                </div>
+                                <input type="text" name="keyword" placeholder="Bạn tìm sản phẩm gì?" required autocomplete="off"/>
+                                <button type="submit" class="site-btn">TÌM</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                          <div class="hero__search__phone__icon">
+                            <i class="fa fa-phone"></i>
+                          </div>
+                          <div class="hero__search__phone__text">
+                            <a href="tel:0981198781"><h5>098 119 8781</h5></a>
+                            <span>Hỗ trợ 24/7</span>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+    <!-- Blog Details Hero Begin -->
+    <section class="blog-details-hero set-bg" data-setbg="../../client/img/blog/details/details-hero.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="blog__details__hero__text">
+                        <h2 th:text="${newsDetail.name}"></h2>
+                        <ul>
+                            <li>Đăng bởi [[${account.username}]]</li>
+                            <li>[[${newsDetail.createdAt}]]</li>
+                            <!-- <li>8 Comments</li> -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Details Hero End -->
+
+    <!-- body  -->
+    <!-- Blog Details Section Begin -->
+    <section class="blog-details spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-5 order-md-1 order-2">
+                    <div class="blog__sidebar">
+                        <div class="blog__sidebar__item">
+                            <h4>Bài viết gần đây</h4>
+                            <div class="blog__sidebar__recent">
+                                <a th:each="news : ${newsRecent}" th:href="@{/tin-tuc/{path}(path=${news.path})}" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img th:src="@{/uploads/{path}(path=${news.image})}" alt="">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6 th:text="${news.name}"><br /> Protect The Liver</h6>
+                                        <span th:text="${news.createdAt}">MAR 05, 2019</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-7 order-md-1 order-1">
+                    <div class="blog__details__text">
+                        <img th:src="@{/uploads/{path}(path=${newsDetail.image})}" alt="Ảnh đại diện">
+                        <p th:text="${newsDetail.description}"></p>
+                        <!-- Sử dụng div để hiển thị nội dung được định dạng từ CKEditor -->
+                         <div th:utext="${newsDetail.content}"></div>
+                    </div>
+                    <div class="blog__details__content">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="blog__details__author">
+                                    <div class="blog__details__author__pic">
+                                        <!-- ảnh đại diện người đăng  -->
+                                        <img src="../../client/img/blog/details/details-author.jpg" alt=""> 
+                                    </div>
+                                    <div class="blog__details__author__text">
+                                        <h6 th:text="${account.username}"></h6>
+                                        <span>Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="blog__details__widget">
+                                    <!-- <ul>
+                                        <li><span>Categories:</span> Food</li>
+                                        <li><span>Tags:</span> All, Trending, Cooking, Healthy Food, Life Style</li>
+                                    </ul> -->
+                                    <div class="blog__details__social">
+                                        <a href="#"><i class="fa fa-facebook"></i></a>
+                                        <a href="#"><i class="fa fa-twitter"></i></a>
+                                        <a href="#"><i class="fa fa-google-plus"></i></a>
+                                        <a href="#"><i class="fa fa-linkedin"></i></a>
+                                        <a href="#"><i class="fa fa-envelope"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Blog Details Section End -->
+
+    <!-- Related Blog Section Begin -->
+    <section class="related-blog spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title related-blog-title">
+                        <h2>Bài viết bạn có thể thích</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6" th:each="news : ${newsRand}">
+                    <div class="blog__item">
+                        <div class="blog__item__pic">
+                            <img th:src="@{/uploads/{path}(path=${news.image})}" alt="">
+                        </div>
+                        <div class="blog__item__text">
+                            <ul>
+                                <li><i class="fa fa-calendar-o"></i> May 4,2019</li>
+                                <!-- <li><i class="fa fa-comment-o"></i> 5</li> -->
+                            </ul>
+                            <h5><a th:href="@{/tin-tuc/{path}(path=${news.path})}" th:text="${news.name}">[[${news.name}]]</a></h5>
+                            <p th:text="${news.description}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Related Blog Section End -->
+    
+    <!-- end body  -->
+    <footer th:replace="common/_footer_Client"></footer>
+    
+</body>
+</html>

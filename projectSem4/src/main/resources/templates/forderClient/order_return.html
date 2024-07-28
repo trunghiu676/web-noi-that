@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Đơn hàng</title>
+<style th:replace="/common/_Head_tag_client"></style>
+
+</head>
+<body>
+<header th:replace="common/_Header_Client"></header>
+<!-- Hero Section Begin -->
+<section class="hero hero-normal">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="hero__categories">
+                    <div class="hero__categories__all">
+                        <i class="fa fa-bars"></i>
+                        <span>Tất cả danh mục</span>
+                    </div>
+                    <ul>
+                        <li th:each="category : ${categories}"><a th:href="@{/{path}(path=${category.path})}">[[${category.name}]]</a></li>
+                        <li><a href="#">Khuyến Mãi</a></li>
+                        <li><a href="/tin-tuc">Tin Tức</a></li>
+                        <li><a href="/lien-he">Liên Hệ</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#"> </a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="hero__search">
+                    <div class="hero__search__form">
+                        <form action="/search/product" method="GET">
+                            <div class="hero__search__categories">
+                                Tìm kiếm
+                                <span class="arrow_carrot-down"></span>
+                            </div>
+                            <input type="text" name="keyword" placeholder="Bạn tìm sản phẩm gì?" required autocomplete="off"/>
+                            <button type="submit" class="site-btn">TÌM</button>
+                        </form>
+                    </div>
+                    <div class="hero__search__phone">
+                        <div class="hero__search__phone__icon">
+                        <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__search__phone__text">
+                        <a href="tel:0981198781"><h5>098 119 8781</h5></a>
+                        <span>Hỗ trợ 24/7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="../../client/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Thông tin đơn hàng</h2>
+                    <div class="breadcrumb__option">
+                        <a href="/">Trang chủ</a>
+                        <span>Thông tin đơn hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title">Thông tin đơn hàng</h4>
+                </div>
+                <div class="card-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th>Sản phẩm</th>
+                        <th>Mã sản phẩm</th>
+                        <th>SL</th>
+                        <th>Giá</th>
+                        <th>Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="detail : ${orderDetail}">
+                        <td>
+                          <img
+                            th:src="'/uploads/' + ${detail['product_image']}"
+                            alt="product image"
+                            width="90"
+                          />
+    
+                        </td>
+                        <td><b th:text="${detail['product_name']}"></b></td>
+                        <td th:text="${detail['product_code']}"></td>
+                        <td th:text="${detail['quantity']}"></td>
+                        <td>[[${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')}]]đ</td>
+                        <td>[[${#numbers.formatDecimal(detail.totalPrice, 0, 'COMMA', 0, 'POINT')}]]đ</td>
+                      </tr>
+                      <tr>
+                        <td colspan="4"></td>
+                        <td><h4>Tổng cộng:</h4></td>
+                        <td><h4>[[${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT')}]]đ</h4></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-body">
+                  <table class="table">
+                    <tr>
+                      <th>Trạng thái</th>
+                      <td th:text="${order.status}" style="color: red; font-weight: 700;"></td>
+                    </tr>
+                    <tr>
+                      <th>Mã đơn hàng</th>
+                      <td th:text="${order.code}"></td>
+                    </tr>
+                    <tr>
+                      <th>Họ tên</th>
+                      <td th:text="${order.customerName}"></td>
+                    </tr>
+                    <tr>
+                      <th>Điện thoại</th>
+                      <td th:text="${order.shippingPhone}"></td>
+                    </tr>
+                    <tr>
+                      <th>Địa chỉ</th>
+                      <td th:text="${order.shippingAddress}"></td>
+                    </tr>
+                    <tr>
+                      <th>Ngày đặt hàng</th>
+                      <td th:text="${order.orderDate}"></td>
+                    </tr>
+                    <tr>
+                      <th>Phương thức thanh toán</th>
+                      <td th:text="${order.paymentStatus ? 'Thanh toán qua VNPAY' : 'Giao & thu tiền tận nơi - COD'}"></td>
+                    </tr>
+                    <tr>
+                      <td th:if="${order.status == 'Đơn hàng mới'}"> 
+                        <button type="button" class="btn btn-danger" onclick="confirmCancelOrder()">Hủy đơn</button>
+                      </td>
+                      <td th:if="${order.status == 'Đơn hàng mới'}">
+                        <button type="button" class="btn btn-primary" onclick="showEditForm()">Chỉnh sửa đơn hàng</button>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <!-- edit đơn hàng -->
+    <div class="container">
+      <div id="editOrderFormWrapper" style="display: none;">
+        <form id="editOrderForm">
+          <div class="form-group">
+            <label for="customerName">Họ tên:</label>
+            <input type="text" class="form-control" id="customerName" name="customerName" th:value="${order.customerName}">
+            <div id="customerNameError" class="error-message"></div>
+          </div>
+          <div class="form-group">
+            <label for="shippingPhone">Số điện thoại:</label>
+            <input type="text" class="form-control" id="shippingPhone" name="shippingPhone" th:value="${order.shippingPhone}">
+            <div id="shippingPhoneError" class="error-message"></div>
+          </div>
+          <div class="form-group">
+            <label for="shippingAddress">Địa chỉ giao hàng:</label>
+            <input type="text" class="form-control" id="shippingAddress" name="shippingAddress" th:value="${order.shippingAddress}">
+            <div id="shippingAddressError" class="error-message"></div>
+          </div>
+          <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveEdit()">Lưu thay đổi</button>
+        </form>
+      </div>
+    </div>
+    <!-- END  -->
+</section>
+
+ <footer th:replace="common/_footer_Client"></footer>
+ <!-- JavaScript kiểm tra người dùng nhập form -->
+
+ <script th:inline="javascript">
+  var orderId = /*[[${order.id}]]*/ 0;
+  var username = /*[[${session.username}]]*/ 0;
+    // Hiển thị form chỉnh sửa
+  function showEditForm() {
+    document.getElementById("editOrderFormWrapper").style.display = "block";
+  }
+
+  // Ẩn form chỉnh sửa
+  function hideEditForm() {
+    document.getElementById("editOrderFormWrapper").style.display = "none";
+  }
+
+  // Hủy chỉnh sửa
+  function cancelEdit() {
+    hideEditForm();
+  }
+
+  // Hàm xác nhận hủy đơn hàng
+  function confirmCancelOrder() {
+      if (confirm("Bạn có chắc chắn muốn hủy đơn hàng không?")) {
+          cancelOrder();
+      } else {
+          return false;
+      }
+  }
+
+  //Xóa đơn hàng
+  function cancelOrder() {
+    $.ajax({
+        type: "POST",
+        url: "/dat-hang/cancel_order",
+        data: { orderId: orderId },
+        success: function (response) {
+          $("#notification").html(response).addClass("show");
+          setTimeout(function() {
+              $("#notification").removeClass("show");
+                window.location.href="/profile/" + username;
+          }, 2000);
+        },
+        error: function (xhr, status, error) {
+            alert("Đã xảy ra lỗi: " + error);
+        }
+    });
+}
+
+  function saveEdit() {
+      var customerName = document.getElementById('customerName').value.trim();
+      var shippingPhone = document.getElementById('shippingPhone').value.trim();
+      var shippingAddress = document.getElementById('shippingAddress').value.trim();
+
+      var customerNameError = document.getElementById('customerNameError');
+      var shippingPhoneError = document.getElementById('shippingPhoneError');
+      var shippingAddressError = document.getElementById('shippingAddressError');
+
+      customerNameError.innerHTML = "";
+      shippingPhoneError.innerHTML = "";
+      shippingAddressError.innerHTML = "";
+
+      var isValid = true;
+
+      if (customerName === "") {
+          customerNameError.innerHTML = "Vui lòng nhập tên của bạn";
+          isValid = false;
+      }
+      if (shippingPhone === "") {
+          shippingPhoneError.innerHTML = "Vui lòng nhập số điện thoại nhận hàng";
+          isValid = false;
+      }
+      if (shippingAddress === "") {
+          shippingAddressError.innerHTML = "Vui lòng nhập địa chỉ giao hàng";
+          isValid = false;
+      }
+
+      if (!isValid) {
+          return; // Không gửi AJAX nếu dữ liệu không hợp lệ
+      }
+
+      $.ajax({
+          type: "POST",
+          url: "/dat-hang/edit_order",
+          data: {
+              orderId: orderId,
+              customerName: customerName,
+              shippingPhone: shippingPhone,
+              shippingAddress: shippingAddress
+          },
+          success: function (response) {
+              $("#notification").html(response).addClass("show");
+              setTimeout(function () {
+                  $("#notification").removeClass("show");
+                  if (response === "Cập nhật thông tin đơn hàng thành công!") {
+                      window.location.reload();
+                  }
+              }, 2000);
+          },
+          error: function (xhr, status, error) {
+              $("#notification").html("Đã xảy ra lỗi: " + error).addClass("show");
+              setTimeout(function () {
+                  $("#notification").removeClass("show");
+              }, 2000);
+          }
+      });
+  }
+
+</script>
+</body>
+</html>

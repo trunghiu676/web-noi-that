@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:fragment="TitlePage">tạo chương trình khuyến mãi</title>
+    <style th:replace="/common/_Head_tag"></style>
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.css">
+  </head>
+  <body>
+    <!-- header-->
+    <header th:replace="common/_Header_admin"></header>
+    
+
+    <div class="content">
+      <div class="page-inner">
+        <!-- breadcrumbs -->
+        <div class="page-header">
+          <ul class="breadcrumbs">
+            <li class="nav-home">
+              <a href="/admin">
+                <i class="flaticon-home"></i>
+              </a>
+            </li>
+            <li class="separator">
+              <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+              <a href="/admin/discount/add"> Chương trình khuyến mãi</a>
+            </li>
+          </ul>
+        </div>
+        <!-- end breadcrumbs -->
+  
+      <!-- body-->
+  
+        <div class="row">
+          <div class="col-md-12">
+              <div class="card">
+                  <div class="card-header">
+                      <h4 class="card-title">Thêm khuyến mãi</h4>
+                  </div>
+                  <!-- content body -->
+                  <div class="card-body">
+                      <form th:action="@{/admin/discount/add}" th:object="${discount}" method="post" id="discountForm">
+                          <div class="form-group">
+                              <label for="name">Tên khuyến mãi:</label>
+                              <input type="text" class="form-control" id="name" th:field="*{name}" />
+                              <div id="nameError" class="error-message"></div>
+                          </div>
+                          <div class="form-group">
+                              <label for="percent">Phần trăm giảm giá:</label>
+                              <input type="number" id="percent" th:field="*{percent}" />
+                              <div id="percentError" class="error-message"></div>
+                          </div>
+                          <div class="form-group">
+                              <label for="status">Kích hoạt:</label>
+                              <input type="checkbox" id="status" th:field="*{status}" />
+                          </div>
+                          <div class="form-group">
+                              <button type="submit" class="btn btn-primary">Lưu</button>
+                          </div>
+                      </form>
+                  </div>
+                  <!-- end content body -->
+              </div>
+          </div>
+      </div>
+      <!-- End body -->
+  </div>
+  </div>
+  <!-- End Modal -->
+
+  <!-- footer-->
+  <footer th:replace="common/_footer_admin"></footer>
+  <!-- JavaScript kiểm tra người dùng nhập form -->
+  <script>
+    document.getElementById('discountForm').addEventListener('submit', function(event) {
+        var name = document.getElementById('name').value.trim();
+        var percent = document.getElementById('percent').value.trim();
+
+        var nameError = document.getElementById('nameError');
+        var percentError = document.getElementById('percentError');
+
+        nameError.innerHTML = "";
+        percentError.innerHTML = "";
+
+        if (name === "") {
+            nameError.innerHTML = "Vui lòng nhập tên khuyến mãi";
+            event.preventDefault();
+        }
+        if (percent === "") {
+                percentError.innerHTML = "Vui lòng nhập phần trăm giảm giá";
+                event.preventDefault();
+            }
+        else if (isNaN(percent) || parseInt(percent) < 0 || parseInt(percent) > 100) {
+            percentError.innerHTML = "Phần trăm giảm giá phải là một số từ 0 đến 100";
+            event.preventDefault();
+        }
+    });
+
+    // Ẩn thông báo lỗi khi người dùng bắt đầu nhập lại trường đó
+    document.getElementById('name').addEventListener('input', function() {
+        document.getElementById('nameError').innerHTML = "";
+    });
+
+    document.getElementById('percent').addEventListener('input', function() {
+        document.getElementById('percentError').innerHTML = "";
+    });
+
+  </script>
+  </body>
+</html>

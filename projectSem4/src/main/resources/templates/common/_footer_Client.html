@@ -1,0 +1,153 @@
+<div id="notification" class="notification"></div>
+ <footer class="footer spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6">
+                    <div class="footer__about">
+                        <div class="footer__about__logo">
+                            <a href="./index.html"><img src="../../client/img/logo.png" alt=""></a>
+                        </div>
+                        <ul>
+                            <li>Địa chỉ: 606 Nguyễn Văn Quá - Phường Đông Hưng Thuận</li>
+                            <li>Phone: +84 98.119.8781</li>
+                            <li>Email: hkt@contact.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                    <div class="footer__widget">
+                        <h6>Danh mục</h6>
+                        <ul>
+                            <li th:each="category : ${categories}"><a th:href="@{/{path}(path=${category.path})}">[[${category.name}]]</a></li>
+                          </ul>
+                        <ul>
+                            <li><a href="/khuyen-mai">Khuyến Mãi</a></li>
+                            <li><a href="/tin-tuc">Tin Tức</a></li>
+                            <li><a href="/lien-he">Liên Hệ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="footer__widget">
+                        <h6>Liên hệ với cửa hàng</h6>
+                        <p>Nhập Email để nhận thông tin mới nhất từ cửa hàng.</p>
+                        <form action="#">
+                            <input type="text" placeholder="Enter your mail">
+                            <button type="submit" class="site-btn">Gửi</button>
+                        </form>
+                        <div class="footer__widget__social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="footer__copyright">
+                        <div class="footer__copyright__payment"><img src="../../client/img/payment-item.png" alt=""></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+  
+            <df-messenger
+            intent="WELCOME"
+            chat-title="chat_AI"
+            agent-id="97460b5b-3330-4f2c-a697-fc7ff7833154"
+            language-code="en"
+            ></df-messenger>
+    <!-- Footer Section End -->
+    <!-- <div class="toast" id="successToast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-header">
+          <strong class="mr-auto">Thông báo</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          Sản phẩm đã được thêm vào giỏ hàng!
+        </div>
+    </div> -->
+      
+
+    <!-- Js Plugins -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <script src="../../client/js/jquery-3.3.1.min.js"></script>
+    <script src="../../client/js/bootstrap.min.js"></script>
+    <script src="../../client/js/jquery.nice-select.min.js"></script>
+    <script src="../../client/js/jquery-ui.min.js"></script>
+    <script src="../../client/js/jquery.slicknav.js"></script>
+    <script src="../../client/js/mixitup.min.js"></script>
+    <script src="../../client/js/owl.carousel.min.js"></script>
+    <!-- <script src="../../client/js/popper.js"></script> -->
+    <script src="../../client/js/main.js"></script>
+    <script src="../../client/js/single_custom.js"></script>
+
+    <script>
+        // Định nghĩa hàm thêm sản phẩm vào giỏ hàng
+        function addToCart(productId, quantity) {
+        // Gửi yêu cầu POST tới endpoint "/add-to-cart/{productId}"
+        $.ajax({
+            type: "POST",
+            url: "/add-to-cart?productId=" + productId + "&quantity=" + quantity,
+            success: function(response) {
+                if (response.hasOwnProperty("success")) {
+                    console.log("Sản phẩm đã được thêm vào giỏ hàng!, Số lượng: ", quantity);
+                    $("#notification").html(response.success).addClass("show");
+                } else if (response.hasOwnProperty("error")) {
+                    console.error("Lỗi khi thêm sản phẩm vào giỏ hàng: " + response.error);
+                    $("#notification").html(response.error).addClass("error").addClass("show");
+                }
+                // Cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
+                updateCartItemCount();
+                setTimeout(function() {
+                    $("#notification").removeClass("show").removeClass("error");
+                }, 2000);
+            },
+            error: function(xhr, status, error) {
+                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng: " + error);
+            }
+        });
+    }
+
+
+    // cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
+    function updateCartItemCount() {
+        // Gửi yêu cầu GET tới endpoint "/cart-item-count"
+        $.ajax({
+            type: "GET",
+            url: "/cart-item-count",
+            success: function(response) {
+                // Cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
+                $("#cart-item-count").text(response);
+            },
+            error: function(xhr, status, error) {
+                // Xử lý lỗi (nếu có)
+                console.error("Lỗi khi cập nhật số lượng sản phẩm trong giỏ hàng: " + error);
+            }
+        });
+    }
+
+    // Sử dụng jQuery để bắt sự kiện click vào nút "Thêm vào giỏ hàng"
+    $(document).ready(function() {
+        // Xác định trang hiện tại và thêm lớp active
+        var currentLocation = window.location.pathname; // Lấy đường dẫn của trang hiện tại
+        $('.header__menu li').removeClass('active'); // Loại bỏ lớp active từ tất cả các mục menu
+        $('.header__menu li a').each(function() {
+            var link = $(this).attr('href');
+            if (link === currentLocation) {
+                $(this).closest('li').addClass('active'); // Thêm lớp active cho mục menu chứa liên kết đang xem
+            }
+        });
+        // $('.toast').toast(); // Kích hoạt Toast 
+        $(".add-to-cart-btn").click(function() {
+            var productId = $(this).closest(".product__item").find(".productIdCart").val();
+            addToCart(productId, 1);
+        });
+        updateCartItemCount();
+    });
+    </script>

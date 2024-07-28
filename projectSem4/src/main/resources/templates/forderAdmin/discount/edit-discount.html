@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:fragment="TitlePage">Chỉnh sửa khuyến mãi</title>
+    <style th:replace="/common/_Head_tag"></style>
+  </head>
+  
+  <body>
+    <!-- header-->
+    <header th:replace="common/_Header_admin"></header>
+
+    <div class="content">
+      <div class="page-inner">
+        <!-- breadcrumbs -->
+        <div class="page-header">
+          <ul class="breadcrumbs">
+            <li class="nav-home">
+              <a href="/admin">
+                <i class="flaticon-home"></i>
+              </a>
+            </li>
+            <li class="separator">
+              <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+              <a href="/admin/discount">Khuyễn mãi</a>
+            </li>
+            <li class="separator">
+              <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+              <a href="">Chỉnh sửa khuyến mãi</a>
+            </li>
+          </ul>
+        </div>
+        <!-- end breadcrumbs -->
+
+        <!-- body-->
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Chỉnh sửa khuyến mãi</h4>
+              </div>
+              <!-- content body -->
+              <div class="card-body">
+                <form th:action="@{/admin/discount/edit}" th:object="${discount}" method="post" id="discountForm">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="form-group">
+                        <label for="name">Tên khuyến mãi:</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" />
+                        <div id="nameError" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="percent">Phần trăm giảm giá:</label>
+                        <input type="number" id="percent" th:field="*{percent}" />
+                        <div id="percentError" class="error-message"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Kích hoạt:</label>
+                        <input type="checkbox" id="status" th:field="*{status}" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+              </div>
+              <!-- end content body -->
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Thêm sản phẩm vào chương trình khuyến mãi</h4>
+              </div>
+              <!-- content body -->
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="add-row" class="display table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th>Ảnh </th>
+                        <th>Tên sản phẩm</th>
+                        <th>SKU</th>
+                        <th>Giá</th>
+                        <th style="width: 10%">Trạng thái</th>
+                      </tr>
+                    </thead>
+                      <tbody>
+                        <tr th:each="product : ${products}" th:unless="${product.isDelete}">
+                          <td  ><img th:src="@{/uploads/{image}(image=${product.image})}" width="70px" class="thumbnail" style="margin: 10px;"> </td>
+                          <td th:text="${product.name}">Tên sản phẩm</td>
+                          <td th:text="${product.code}">Người tạo</td>
+                          <td>[[${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}]]đ</td>
+                          <td>
+                            <button id="activeDiscount" class="btn btn-danger btn-border" th:if="${product.isAddedToDiscount}" th:onclick="'addOrRemoveProductFromDiscount(' + ${product.id} + ', ' + ${discount.id} + ', ' + ${product.isAddedToDiscount} + ')'" >
+                              Bỏ chọn
+                            </button>
+                            <button id="activeDiscount" class="btn btn-info btn-border" th:if="${!product.isAddedToDiscount}" th:onclick="'addOrRemoveProductFromDiscount(' + ${product.id} + ', ' + ${discount.id} + ', ' + ${product.isAddedToDiscount} + ')'" >
+                              Thêm vào
+                            </button>
+                          </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                </div>
+              </div>
+              <!-- end content body -->
+            </div>
+          </div>
+        </div>
+        <!-- End body -->
+     
+
+    <!-- footer-->
+    <footer th:replace="common/_footer_admin"></footer>
+
+    <!-- //////// -->
+    <script>
+      document.getElementById('discountForm').addEventListener('submit', function(event) {
+          var name = document.getElementById('name').value.trim();
+          var percent = document.getElementById('percent').value.trim();
+  
+          var nameError = document.getElementById('nameError');
+          var percentError = document.getElementById('percentError');
+  
+          nameError.innerHTML = "";
+          percentError.innerHTML = "";
+  
+          if (name === "") {
+              nameError.innerHTML = "Vui lòng nhập tên khuyến mãi";
+              event.preventDefault();
+          }
+          if (percent === "") {
+                  percentError.innerHTML = "Vui lòng nhập phần trăm giảm giá";
+                  event.preventDefault();
+              }
+          else if (isNaN(percent) || parseInt(percent) < 0 || parseInt(percent) > 100) {
+              percentError.innerHTML = "Phần trăm giảm giá phải là một số từ 0 đến 100";
+              event.preventDefault();
+          }
+      });
+  
+      // Ẩn thông báo lỗi khi người dùng bắt đầu nhập lại trường đó
+      document.getElementById('name').addEventListener('input', function() {
+          document.getElementById('nameError').innerHTML = "";
+      });
+  
+      document.getElementById('percent').addEventListener('input', function() {
+          document.getElementById('percentError').innerHTML = "";
+      });
+  
+    </script>
+
+<script>
+  function addOrRemoveProductFromDiscount(productId, discountId, isAdded) {
+      // Gửi AJAX để thực hiện thêm hoặc bỏ chọn sản phẩm khuyến mãi
+  
+      $.ajax({
+          type: "POST",
+          url: "/admin/discount/add-product-to-discount",
+          data: {
+              productId: productId,
+              discountId: isAdded ? 0 : discountId // Nếu sản phẩm đã được thêm vào, gửi discountId là null để bỏ chọn
+          },
+          success: function(response) {
+              if (response === "success") {
+                  isAdded = !isAdded; // Cập nhật trạng thái của sản phẩm
+                  location.reload(); 
+              } else {
+                  alert("Đã xảy ra lỗi khi thực hiện thao tác. Vui lòng thử lại sau.");
+              }
+          },
+          error: function(xhr, status, error) {
+              alert("Đã xảy ra lỗi: " + error);
+          }
+      });
+  }
+</script>
+
+
+  </body>
+</html>
